@@ -1,18 +1,21 @@
 #include "main.h"
 
-bool initList(int *num, Anime *list, int *maxLen) // init list
+// init list
+bool initList(int *num, Anime *list, int *maxLen)
 {
     *num = 1;
-    // read list and read code
+    // read folder, list and password
     return listFiles(DIR, num, list, maxLen) && readList(num, list) && readPassWord();
 }
 
-bool readList(int *num, Anime *list) // read list
+// read list
+bool readList(int *num, Anime *list)
 {
     ifstream fin;
     string tmp, name;
     int n;
 
+    // open list
     fin.open(LISTNAME, ios::in);
 
     if (fin.is_open() == false)
@@ -21,6 +24,7 @@ bool readList(int *num, Anime *list) // read list
         return false;
     }
 
+    // compare to reading folder
     while (getline(fin, tmp))
     {
         name.clear();
@@ -39,15 +43,18 @@ bool readList(int *num, Anime *list) // read list
         }
     }
 
+    // close list
     fin.close();
 
     return true;
 }
 
-void writeList(int *num, Anime *list) // write list
+// write list
+void writeList(int *num, Anime *list)
 {
     ofstream fout;
 
+    // open list
     fout.open(LISTNAME, ios::out);
 
     if (fout.is_open() == false)
@@ -56,11 +63,13 @@ void writeList(int *num, Anime *list) // write list
         return;
     }
 
+    // write list
     for (register int i = 1; i <= *num; i++)
     {
         fout << list[i].name << '|' << list[i].times << endl;
     }
 
+    // close list
     fout.close();
 }
 
@@ -68,13 +77,14 @@ bool readPassWord(void)
 {
     string passWord;
 
+    // get password
     cout << "Hi! Your password" << endl
          << "> ";
 
     passWord = getPassword();
     cout << endl;
 
-    // code comparsion
+    // password comparsion
     if (comparePassWord(&passWord))
     {
         return true;
@@ -86,7 +96,8 @@ bool readPassWord(void)
     }
 }
 
-void outList(int *num, Anime *list, int *maxLen) // output list
+// out list
+void outList(int *num, Anime *list, int *maxLen)
 {
     // if output
     // if (ifOutput == false)
@@ -95,13 +106,14 @@ void outList(int *num, Anime *list, int *maxLen) // output list
     //     return;
     // }
 
-    // output
+    // out lsit
     for (int i = 1; i <= *num; i += 2)
     {
         drawLine(*maxLen);
 
         cout << '|';
 
+        // first row
         if (list[i].times > 0)
         {
             greenOut(list, i, *maxLen);
@@ -110,6 +122,7 @@ void outList(int *num, Anime *list, int *maxLen) // output list
         {
             normalOut(list, i, *maxLen);
         }
+        // second row
         if (list[i + 1].times > 0)
         {
             greenOut(list, i + 1, *maxLen);
@@ -124,7 +137,8 @@ void outList(int *num, Anime *list, int *maxLen) // output list
     drawLine(*maxLen);
 }
 
-void chooseList(int *num, Anime *list, bool *flg, int *maxLen) // choose list
+// choose list
+void chooseList(int *num, Anime *list, bool *flg, int *maxLen)
 {
     int chooseNum;
     string chooseChar, chooseTimes;
@@ -132,39 +146,50 @@ void chooseList(int *num, Anime *list, bool *flg, int *maxLen) // choose list
     // chooseNum is to link number and times
     // chooseTimes is the input of what episons the anime had been seen
 
+    // get anime number
     cout << "Choose which anime to watch"
          << "[" << *num << "]" << endl
          << "> ";
     cin >> chooseChar;
 
+    // input
     if (chooseChar == "q")
     {
+        // quit
         writeList(num, list);
         *flg = false;
         return;
     }
     else if (chooseChar == "l")
     {
+        // list
         outList(num, list, maxLen);
     }
     else if (!isChar(chooseChar))
     {
+        // error
         warning("Unexpected input");
     }
     else
     {
+        // switch to number
         chooseNum = atoi(chooseChar.c_str());
-
-        // above is to choose number
 
         if (chooseNum > *num)
         {
+            // error
             warning("Unexpected input");
         }
         else
         {
+            // open the crrent epison
+            if (chooseNum == 0)
+            {
+                chooseNum = 1;
+            }
             openFiles(DIR, list, chooseNum);
 
+            // print crrent epison
             if (list[chooseNum].times >= MAX_EPI)
             {
                 cout << "\033[32;1m" << '[' << chooseNum << ']' << list[chooseNum].name << " "
@@ -176,28 +201,35 @@ void chooseList(int *num, Anime *list, bool *flg, int *maxLen) // choose list
                 cout << "\033[32;1m" << '[' << chooseNum << ']' << list[chooseNum].name << " " << list[chooseNum].times << "\033[0m" << endl;
             }
 
+            // get update epison
             cout << "Updating history" << endl
                  << "> ";
             cin >> chooseTimes;
+
             if (chooseTimes == "q")
             {
+                // quit
                 writeList(num, list);
                 *flg = false;
                 return;
             }
             else if (chooseTimes == "f")
             {
+                // finish
                 list[chooseNum].times = MAX_EPI;
             }
             else if (!isChar(chooseTimes))
             {
+                // error
                 warning("Unexpected input");
             }
             else
             {
+                // record
                 list[chooseNum].times = atoi(chooseTimes.c_str());
             }
-
+            
+            // print update epison
             if (list[chooseNum].times >= MAX_EPI)
             {
                 cout << "\033[102;1m" << '[' << chooseNum << ']' << list[chooseNum].name << " "
@@ -208,13 +240,14 @@ void chooseList(int *num, Anime *list, bool *flg, int *maxLen) // choose list
             {
                 cout << "\033[102;1m" << '[' << chooseNum << ']' << list[chooseNum].name << " " << list[chooseNum].times << "\033[0m" << endl;
             }
-            // above is to choose episons
+            // above is to choose and open episons
 
             // refreshList();
         }
     }
 }
 
+// read folder
 bool listFiles(string dir, int *num, Anime *list, int *maxLen)
 {
     intptr_t handle;
@@ -230,6 +263,7 @@ bool listFiles(string dir, int *num, Anime *list, int *maxLen)
         return false;
     }
 
+    // read folder
     do
     {
         if (findData.attrib & _A_SUBDIR &&
@@ -247,13 +281,16 @@ bool listFiles(string dir, int *num, Anime *list, int *maxLen)
         }
     } while (_findnext(handle, &findData) == 0);
 
-    *num -= 1; // correct number
+    // correct number
+    *num -= 1;
 
+    // close handle
     _findclose(handle);
 
     return true;
 }
 
+// open epison
 void openFiles(string dir, Anime *list, int i)
 {
     intptr_t handle;
@@ -263,6 +300,7 @@ void openFiles(string dir, Anime *list, int i)
     string command, diskDir;
     string playlist[MAX_EPI];
 
+    // anime dir
     diskDir = dir + list[i].name + "/*.*";
 
     // open file handle
@@ -273,6 +311,7 @@ void openFiles(string dir, Anime *list, int i)
         return;
     }
 
+    // read epison
     do
     {
         if (findData.attrib & (_A_NORMAL | _A_RDONLY | _A_HIDDEN) && isMovie(findData.name))
@@ -282,9 +321,14 @@ void openFiles(string dir, Anime *list, int i)
         }
     } while (_findnext(handle, &findData) == 0);
 
+    // command
     command = "mpv --no-terminal \"" + dir + list[i].name + '/' + playlist[list[i].times] + "\"";
 
+    // execute command
     system(command.c_str());
+
+    // close handle
+    _findclose(handle);
 }
 
 inline int findItem(string item, int *num, Anime *list)
@@ -308,14 +352,13 @@ inline string getPassword(void)
     while (ch != '\n' && ch != '\r')
     {
         ret += ch;
-        // cout << "debug:" << ret << endl;
         ch = _getch();
     }
 
     return ret;
 }
 
-inline bool comparePassWord(string *passWord) // code comparision
+inline bool comparePassWord(string *passWord)
 {
     if (*passWord == PASS_WORD)
     {
@@ -327,7 +370,7 @@ inline bool comparePassWord(string *passWord) // code comparision
     }
 }
 
-inline bool isChar(string str) // distinguish number and char
+inline bool isChar(string str)
 {
     for (int i = 0; i < str.size(); i++)
     {
