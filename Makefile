@@ -1,7 +1,7 @@
 objects = main.obj func.obj
 
 MAKE = make
-COMPILER = g++ -O3 -Wall
+COMPILER = g++ -O3
 DEL = del
 
 main.exe : $(objects) main.h Makefile

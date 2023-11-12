@@ -38,6 +38,7 @@ inline bool isChar(string str);
 inline bool isMovie(char *str_c);
 
 inline void warning(string str);
+inline void warning(int num);
 
 inline void drawLine(int len);
 

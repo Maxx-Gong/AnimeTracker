@@ -275,14 +275,24 @@ void openFiles(string dir, Anime *list, int i)
 
     do
     {
-        if (findData.attrib & (_A_NORMAL | _A_RDONLY | _A_HIDDEN) && isMovie(findData.name))
+        if (!(findData.attrib & _A_SUBDIR) && isMovie(findData.name))
         {
             epi++;
             playlist[epi] = findData.name;
+
         }
     } while (_findnext(handle, &findData) == 0);
 
-    command = "mpv --no-terminal \"" + dir + list[i].name + '/' + playlist[list[i].times] + "\"";
+    if(list[i].times == 0)
+    {
+        epi = 1;
+    }
+    else
+    {
+        epi = list[i].times;
+    }
+
+    command = "mpv --no-terminal \"" + dir + list[i].name + '/' + playlist[epi] + "\"";
 
     system(command.c_str());
 }
@@ -329,7 +339,7 @@ inline bool comparePassWord(string *passWord) // code comparision
 
 inline bool isChar(string str) // distinguish number and char
 {
-    for (int i = 0; i < str.size(); i++)
+    for (register int i = 0; i < str.size(); i++)
     {
         if (str[i] >= 'a' && str[i] <= 'z')
         {
@@ -359,6 +369,13 @@ inline void warning(string str) // warning
 {
     cout << "\033[31;1m"
          << "[Warning]" << str
+         << "\033[0m" << endl;
+}
+
+inline void warning(int num) // warning
+{
+    cout << "\033[31;1m"
+         << "[Warning]" << num
          << "\033[0m" << endl;
 }
 
