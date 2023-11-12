@@ -183,9 +183,9 @@ void chooseList(int *num, Anime *list, bool *flg, int *maxLen)
         else
         {
             // open the crrent epison
-            if (chooseNum == 0)
+            if (list[chooseNum].times == 0)
             {
-                chooseNum = 1;
+                list[chooseNum].times = 1;
             }
             openFiles(DIR, list, chooseNum);
 
