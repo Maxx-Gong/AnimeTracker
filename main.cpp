@@ -6,6 +6,7 @@ Anime list[MAX_NUM];
 
 int main()
 {
+    // init and keeping login
     if (initList(&num, list, &maxLen))
     {
         flg = true;
@@ -14,16 +15,17 @@ int main()
     {
         flg = false;
     }
-    // init and keeping login
 
+    // output
     if (flg)
     {
-        outList(&num, list, &maxLen); // output
+        outList(&num, list, &maxLen);
     }
 
+    // choose list
     while (flg)
     {
-        chooseList(&num, list, &flg, &maxLen); // choose list
+        chooseList(&num, list, &flg, &maxLen);
     }
 
     return 0;
