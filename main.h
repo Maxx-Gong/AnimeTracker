@@ -10,7 +10,7 @@
 #define MAX_EPI     10001
 #define PASS_WORD   "g5032m908"
 #define LISTNAME    "List"
-#define DIR         "F:/Videos/Movie/"
+#define DIR         "/Movies/"
 
 using namespace std;
 
