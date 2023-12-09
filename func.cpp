@@ -107,9 +107,9 @@ void outList(int *num, Anime *list, int *maxLen)
     // }
 
     // out lsit
-    for (int i = 1; i <= *num; i += 2)
+    drawLine(*maxLen);
+    for (int i = 1, j = ceil(*num / 2) + 1; i <= ceil(*num / 2), j <= *num; i += 1, j += 1)
     {
-        drawLine(*maxLen);
 
         cout << '|';
 
@@ -123,13 +123,13 @@ void outList(int *num, Anime *list, int *maxLen)
             normalOut(list, i, *maxLen);
         }
         // second row
-        if (list[i + 1].times > 0)
+        if (list[j].times > 0)
         {
-            greenOut(list, i + 1, *maxLen);
+            greenOut(list, j, *maxLen);
         }
         else
         {
-            normalOut(list, i + 1, *maxLen);
+            normalOut(list, j, *maxLen);
         }
 
         cout << endl;

@@ -5,6 +5,7 @@
 #include <io.h>
 #include <iomanip>
 #include <conio.h>
+#include <cmath>
 
 #define MAX_NUM     101
 #define MAX_EPI     10001
