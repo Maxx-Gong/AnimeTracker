@@ -1,4 +1,7 @@
 .vscode/
+fakeMovies/
 
 *.obj
 *.exe
+
+List.txt

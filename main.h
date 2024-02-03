@@ -10,8 +10,8 @@
 #define MAX_NUM     101
 #define MAX_EPI     10001
 #define PASS_WORD   "g5032m908"
-#define LISTNAME    "List"
-#define DIR         "/Movies/"
+#define LISTNAME    "List.txt"
+#define DIR         "D:/C++/AnimeTracker/fakeMovies/"
 
 using namespace std;
 
@@ -22,7 +22,7 @@ struct Anime
 };
 
 bool initList(int *num, Anime *list, int *maxLen);
-void outList(int *num, Anime *list, int *maxLen);
+void outList(int *num, Anime *list, int *maxLen, int mode);
 bool listFiles(string dir, int *num, Anime *list, int *maxLen);
 bool readList(int *num, Anime *list);
 void chooseList(int *num, Anime *list, bool *flg, int *maxLen);

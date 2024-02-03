@@ -97,7 +97,7 @@ bool readPassWord(void)
 }
 
 // out list
-void outList(int *num, Anime *list, int *maxLen)
+void outList(int *num, Anime *list, int *maxLen, int mode)
 {
     // if output
     // if (ifOutput == false)
@@ -108,31 +108,146 @@ void outList(int *num, Anime *list, int *maxLen)
 
     // out lsit
     drawLine(*maxLen);
-    for (int i = 1, j = ceil(*num / 2) + 1; i <= ceil(*num / 2), j <= *num; i += 1, j += 1)
+    switch (mode)
     {
+    case 0:
+        for (int i = 1; i <= *num; i++)
+        {
+            bool isprint = false;
 
-        cout << '|';
+            cout << '|';
 
-        // first row
-        if (list[i].times > 0)
-        {
-            greenOut(list, i, *maxLen);
+            // first row
+            while (isprint == false)
+            {
+                if (i > *num)
+                {
+                    break;
+                }
+                else if (list[i].times < MAX_EPI)
+                {
+                    if (list[i].times > 0)
+                    {
+                        greenOut(list, i, *maxLen);
+                    }
+                    else
+                    {
+                        normalOut(list, i, *maxLen);
+                    }
+                    isprint = true;
+                }
+                else
+                {
+                    i += 1;
+                }
+            }
+            isprint = false;
+            i++;
+            // second row
+            while (isprint == false)
+            {
+                if (i > *num)
+                {
+                    break;
+                }
+                else if (list[i].times < MAX_EPI)
+                {
+                    if (list[i].times > 0)
+                    {
+                        greenOut(list, i, *maxLen);
+                    }
+                    else
+                    {
+                        normalOut(list, i, *maxLen);
+                    }
+                    isprint = true;
+                }
+                else
+                {
+                    i += 1;
+                }
+            }
+            cout << endl;
+            if (i >= *num)
+            {
+                break;
+            }
         }
-        else
+        break;
+    case 1:
+        for (int i = 1; i <= *num; i++)
         {
-            normalOut(list, i, *maxLen);
-        }
-        // second row
-        if (list[j].times > 0)
-        {
-            greenOut(list, j, *maxLen);
-        }
-        else
-        {
-            normalOut(list, j, *maxLen);
-        }
+            cout << '|';
 
-        cout << endl;
+            // first row
+            if (list[i].times > 0)
+            {
+                greenOut(list, i, *maxLen);
+            }
+            else
+            {
+                normalOut(list, i, *maxLen);
+            }
+            i++;
+            // second row
+            if (list[i].times > 0)
+            {
+                greenOut(list, i, *maxLen);
+            }
+            else
+            {
+                normalOut(list, i, *maxLen);
+            }
+
+            cout << endl;
+        }
+        break;
+    case 2:
+        for (int i = 1; i <= *num; i++)
+        {
+            bool isprint = false;
+
+            cout << '|';
+
+            // first row
+            while (isprint == false)
+            {
+                if (i > *num)
+                {
+                    break;
+                }
+                else if (list[i].times == MAX_EPI)
+                {
+                    greenOut(list, i, *maxLen);
+                    isprint = true;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+            isprint = false;
+            i++;
+            // second row
+            while (isprint == false)
+            {
+                if (i > *num)
+                {
+                    break;
+                }
+                else if (list[i].times == MAX_EPI)
+                {
+                    greenOut(list, i, *maxLen);
+                    isprint = true;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+            cout << endl;
+        }
+        break;
     }
     drawLine(*maxLen);
 }
@@ -163,7 +278,15 @@ void chooseList(int *num, Anime *list, bool *flg, int *maxLen)
     else if (chooseChar == "l")
     {
         // list
-        outList(num, list, maxLen);
+        outList(num, list, maxLen, 0);
+    }
+    else if (chooseChar == "la")
+    {
+        outList(num, list, maxLen, 1);
+    }
+    else if (chooseChar == "lf")
+    {
+        outList(num, list, maxLen, 2);
     }
     else if (!isChar(chooseChar))
     {
@@ -228,7 +351,7 @@ void chooseList(int *num, Anime *list, bool *flg, int *maxLen)
                 // record
                 list[chooseNum].times = atoi(chooseTimes.c_str());
             }
-            
+
             // print update epison
             if (list[chooseNum].times >= MAX_EPI)
             {
@@ -259,7 +382,8 @@ bool listFiles(string dir, int *num, Anime *list, int *maxLen)
     handle = _findfirst(dir.c_str(), &findData);
     if (handle == -1)
     {
-        warning("Failed to find first file");
+        warning("Failed to find first movie folders");
+        cout << dir << ' ' << "*";
         return false;
     }
 
@@ -307,7 +431,7 @@ void openFiles(string dir, Anime *list, int i)
     handle = _findfirst(diskDir.c_str(), &findData);
     if (handle == -1)
     {
-        warning("Failed to find first file");
+        warning("Failed to find first movie files");
         return;
     }
 
@@ -318,11 +442,10 @@ void openFiles(string dir, Anime *list, int i)
         {
             epi++;
             playlist[epi] = findData.name;
-
         }
     } while (_findnext(handle, &findData) == 0);
 
-    if(list[i].times == 0)
+    if (list[i].times == 0)
     {
         epi = 1;
     }
