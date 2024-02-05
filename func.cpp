@@ -153,6 +153,8 @@ void outList(int *num, Anime *list, int *maxLen, int mode)
     drawLine(*maxLen);
     for (int i = 1, j = ceil(tmpNum / 2) + 1; i <= ceil(tmpNum / 2), j <= tmpNum; i += 1, j += 1)
     {
+        cout << '|';
+        
         // first row
         if (tmpList[i].times > 0)
         {
@@ -171,6 +173,8 @@ void outList(int *num, Anime *list, int *maxLen, int mode)
         {
             normalOut(tmpList, j, *maxLen);
         }  
+
+        cout << endl;
     }
     drawLine(*maxLen);
 }
