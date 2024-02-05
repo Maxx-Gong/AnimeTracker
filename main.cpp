@@ -19,7 +19,7 @@ int main()
     // output
     if (flg)
     {
-        outList(&num, list, &maxLen);
+        outList(&num, list, &maxLen, 0);
     }
 
     // choose list

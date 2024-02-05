@@ -97,39 +97,82 @@ bool readPassWord(void)
 }
 
 // out list
-void outList(int *num, Anime *list, int *maxLen)
+void outList(int *num, Anime *list, int *maxLen, int mode)
 {
-    // if output
     // if (ifOutput == false)
     // {
     //     cout << "QUIT" << endl;
     //     return;
     // }
 
-    // out lsit
+    int tmpNum = 0;
+    tmpAnime tmpList[MAX_NUM];
+
+    // fill temp and choose mode
+    switch (mode)
+    {
+    case 0:
+         // list unfinished
+        for (int i = 1; i <= *num; i++)
+        {
+            if (list[i].times != MAX_EPI)
+            {
+                tmpNum++;
+                tmpList[tmpNum].name = list[i].name;
+                tmpList[tmpNum].times = list[i].times;
+                tmpList[tmpNum].number = i;
+            }
+        }
+        break;
+    case 1:
+        // list all
+        for (int i = 1; i <= *num; i++)
+        {
+            tmpNum++;
+            tmpList[tmpNum].name = list[i].name;
+            tmpList[tmpNum].times = list[i].times;
+            tmpList[tmpNum].number = i;
+        }
+        break;
+    case 2:
+        // list finished
+        for (int i = 1; i <= *num; i++)
+        {
+            if (list[i].times == MAX_EPI)
+            {
+                tmpNum++;
+                tmpList[tmpNum].name = list[i].name;
+                tmpList[tmpNum].times = list[i].times;
+                tmpList[tmpNum].number = i;
+            }
+        }
+        break;
+    }
+
+    // out list
     drawLine(*maxLen);
-    for (int i = 1, j = ceil(*num / 2) + 1; i <= ceil(*num / 2), j <= *num; i += 1, j += 1)
+    for (int i = 1, j = ceil(tmpNum / 2) + 1; i <= ceil(tmpNum / 2), j <= tmpNum; i += 1, j += 1)
     {
 
         cout << '|';
 
         // first row
-        if (list[i].times > 0)
+        if (tmpList[i].times > 0)
         {
-            greenOut(list, i, *maxLen);
+            greenOut(tmpList, i, *maxLen);
         }
         else
         {
-            normalOut(list, i, *maxLen);
+            normalOut(tmpList, i, *maxLen);
         }
         // second row
-        if (list[j].times > 0)
+        if (tmpList[j].times > 0)
         {
-            greenOut(list, j, *maxLen);
+            greenOut(tmpList, j, *maxLen);
         }
         else
         {
-            normalOut(list, j, *maxLen);
+            normalOut(tmpList, j, *maxLen);
         }
 
         cout << endl;
@@ -162,8 +205,18 @@ void chooseList(int *num, Anime *list, bool *flg, int *maxLen)
     }
     else if (chooseChar == "l")
     {
-        // list
-        outList(num, list, maxLen);
+        // list unfinished
+        outList(num, list, maxLen, 0);
+    }
+    else if (chooseChar == "la")
+    {
+        // list all
+        outList(num, list, maxLen, 1);
+    }
+    else if (chooseChar == "lf")
+    {
+        // list finished
+        outList(num, list, maxLen, 2);
     }
     else if (!isChar(chooseChar))
     {
@@ -182,11 +235,6 @@ void chooseList(int *num, Anime *list, bool *flg, int *maxLen)
         }
         else
         {
-            // open the crrent epison
-            if (list[chooseNum].times == 0)
-            {
-                list[chooseNum].times = 1;
-            }
             openFiles(DIR, list, chooseNum);
 
             // print crrent epison
@@ -198,7 +246,9 @@ void chooseList(int *num, Anime *list, bool *flg, int *maxLen)
             }
             else
             {
-                cout << "\033[32;1m" << '[' << chooseNum << ']' << list[chooseNum].name << " " << list[chooseNum].times << "\033[0m" << endl;
+                cout << "\033[32;1m" << '[' << chooseNum << ']' << list[chooseNum].name << " "
+                     << list[chooseNum].times
+                     << "\033[0m" << endl;
             }
 
             // get update epison
@@ -228,7 +278,7 @@ void chooseList(int *num, Anime *list, bool *flg, int *maxLen)
                 // record
                 list[chooseNum].times = atoi(chooseTimes.c_str());
             }
-            
+
             // print update epison
             if (list[chooseNum].times >= MAX_EPI)
             {
@@ -241,8 +291,6 @@ void chooseList(int *num, Anime *list, bool *flg, int *maxLen)
                 cout << "\033[102;1m" << '[' << chooseNum << ']' << list[chooseNum].name << " " << list[chooseNum].times << "\033[0m" << endl;
             }
             // above is to choose and open episons
-
-            // refreshList();
         }
     }
 }
@@ -259,7 +307,7 @@ bool listFiles(string dir, int *num, Anime *list, int *maxLen)
     handle = _findfirst(dir.c_str(), &findData);
     if (handle == -1)
     {
-        warning("Failed to find first file");
+        warning("Failed to find first movie folders");
         return false;
     }
 
@@ -307,7 +355,7 @@ void openFiles(string dir, Anime *list, int i)
     handle = _findfirst(diskDir.c_str(), &findData);
     if (handle == -1)
     {
-        warning("Failed to find first file");
+        warning("Failed to find first movie files");
         return;
     }
 
@@ -318,16 +366,22 @@ void openFiles(string dir, Anime *list, int i)
         {
             epi++;
             playlist[epi] = findData.name;
-
         }
     } while (_findnext(handle, &findData) == 0);
 
-    if(list[i].times == 0)
+    if (list[i].times == 0)
     {
+        // start
+        epi = 1;
+    }
+    else if (list[i].times == MAX_EPI)
+    {
+        // restart
         epi = 1;
     }
     else
     {
+        // follow history
         epi = list[i].times;
     }
 
@@ -435,9 +489,9 @@ inline void drawLine(int len)
     cout << endl;
 }
 
-inline void greenOut(Anime *list, int i, int len)
+inline void greenOut(tmpAnime *list, int i, int len)
 {
-    cout << '[' << setfill('0') << setw(2) << i << ']';
+    cout << '[' << setfill('0') << setw(2) << list[i].number << ']';
     cout << setfill(' ')
          << left
          << setw(len)
@@ -455,9 +509,9 @@ inline void greenOut(Anime *list, int i, int len)
     }
 }
 
-inline void normalOut(Anime *list, int i, int len)
+inline void normalOut(tmpAnime *list, int i, int len)
 {
-    cout << '[' << setfill('0') << setw(2) << i << ']';
+    cout << '[' << setfill('0') << setw(2) << list[i].number << ']';
     cout << setfill(' ')
          << left
          << setw(len)
